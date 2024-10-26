@@ -1,0 +1,229 @@
+/* Light Theme */
+:root {
+    /* Primary Colors */
+    --primary-color: #4f46e5;
+    --primary-light: #6366f1;
+    --primary-dark: #4338ca;
+    
+    /* Secondary Colors */
+    --secondary-color: #7c3aed;
+    --secondary-light: #8b5cf6;
+    --secondary-dark: #6d28d9;
+    
+    /* Accent Colors */
+    --success-color: #10b981;
+    --success-light: #34d399;
+    --success-dark: #059669;
+    
+    --danger-color: #ef4444;
+    --danger-light: #f87171;
+    --danger-dark: #dc2626;
+    
+    --warning-color: #f59e0b;
+    --warning-light: #fbbf24;
+    --warning-dark: #d97706;
+    
+    --info-color: #3b82f6;
+    --info-light: #60a5fa;
+    --info-dark: #2563eb;
+    
+    /* Background Colors */
+    --background-light: #f9fafb;
+    --background-light-hover: #f3f4f6;
+    --card-light: #ffffff;
+    --card-light-hover: #f9fafb;
+    
+    /* Text Colors */
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-tertiary: #6b7280;
+    --text-light: #9ca3af;
+    
+    /* Border Colors */
+    --border-light: #e5e7eb;
+    --border-medium: #d1d5db;
+    
+    /* Shadow Colors */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-color-dark: rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Theme */
+.dark-mode {
+    /* Primary Colors */
+    --primary-color: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    
+    /* Secondary Colors */
+    --secondary-color: #8b5cf6;
+    --secondary-light: #a78bfa;
+    --secondary-dark: #7c3aed;
+    
+    /* Background Colors */
+    --background-light: #111827;
+    --background-light-hover: #1f2937;
+    --card-light: #1f2937;
+    --card-light-hover: #374151;
+    
+    /* Text Colors */
+    --text-primary: #f9fafb;
+    --text-secondary: #f3f4f6;
+    --text-tertiary: #e5e7eb;
+    --text-light: #d1d5db;
+    
+    /* Border Colors */
+    --border-light: #374151;
+    --border-medium: #4b5563;
+    
+    /* Shadow Colors */
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-color-dark: rgba(0, 0, 0, 0.4);
+}
+
+/* Gradient Backgrounds */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, var(--success-color), var(--success-dark));
+}
+
+.gradient-danger {
+    background: linear-gradient(135deg, var(--danger-color), var(--danger-dark));
+}
+
+.gradient-warning {
+    background: linear-gradient(135deg, var(--warning-color), var(--warning-dark));
+}
+
+.gradient-info {
+    background: linear-gradient(135deg, var(--info-color), var(--info-dark));
+}
+
+/* Glass Effect */
+.glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .glass {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Theme Transitions */
+* {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+/* Card Themes */
+.card {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 6px -1px var(--shadow-color);
+}
+
+.card:hover {
+    background: var(--card-light-hover);
+    box-shadow: 0 10px 15px -3px var(--shadow-color-dark);
+}
+
+/* Button Themes */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: var(--secondary-dark);
+}
+
+/* Input Themes */
+.input {
+    background: var(--background-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Status Colors */
+.status-active {
+    background: var(--success-color);
+}
+
+.status-pending {
+    background: var(--warning-color);
+}
+
+.status-inactive {
+    background: var(--danger-color);
+}
+
+/* Notification Themes */
+.notification {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    color: white;
+    z-index: 50;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    background: var(--success-color);
+}
+
+.notification.error {
+    background: var(--danger-color);
+}
+
+.notification.warning {
+    background: var(--warning-color);
+}
+
+.notification.info {
+    background: var(--info-color);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification.fade-out {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

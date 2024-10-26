@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MileWise - Trip History</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/themes.css">
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Include Navigation -->
+    <div id="nav-placeholder"></div>
+
+    <main class="app-container">
+        <div class="main-content">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">Trip History</h1>
+                        <p class="text-sm opacity-80">View and analyze your past trips</p>
+                    </div>
+                    <button onclick="exportTripHistory()" class="btn bg-white/20 hover:bg-white/30 text-white">
+                        <i class="fas fa-download"></i>
+                        <span>Export Data</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Total Earnings</h3>
+                            <p class="text-2xl font-bold" id="totalEarnings">$0.00</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-gradient-to-br from-green-500 to-green-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Total Trips</h3>
+                            <p class="text-2xl font-bold" id="totalTrips">0</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-route text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Total Distance</h3>
+                            <p class="text-2xl font-bold" id="totalDistance">0 mi</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-road text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Total Passengers</h3>
+                            <p class="text-2xl font-bold" id="totalPassengers">0</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card mb-8">
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-[200px] relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" 
+                               id="searchTrips" 
+                               placeholder="Search trips..." 
+                               class="w-full pl-10 p-2 rounded-lg border focus:ring-2 focus:ring-purple-500"
+                               onkeyup="filterTrips()">
+                    </div>
+                    <div class="flex gap-2">
+                        <select id="filterPeriod" 
+                                class="p-2 rounded-lg border focus:ring-2 focus:ring-purple-500"
+                                onchange="filterTrips()">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Earnings Trend</h3>
+                    <canvas id="earningsChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Trip Distribution</h3>
+                    <canvas id="tripsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Trip List -->
+            <div class="card">
+                <h3 class="text-lg font-semibold mb-4">Trip Records</h3>
+                <div class="space-y-4" id="tripsList">
+                    <!-- Trips will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/history.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await utils.loadNavigation();
+            utils.initializeTheme();
+        });
+    </script>
+</body>
+</html>

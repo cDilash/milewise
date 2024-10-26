@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MileWise - Driver Dashboard</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/themes.css">
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Include Navigation -->
+    <div id="nav-placeholder"></div>
+
+    <main class="app-container">
+        <div class="main-content">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">Driver Dashboard</h1>
+                        <p class="text-sm opacity-80">Track your performance and earnings</p>
+                    </div>
+                    <div class="online-status flex items-center">
+                        <span class="relative flex h-3 w-3 mr-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Today's Earnings</h3>
+                            <p class="text-2xl font-bold" id="todayEarnings">$0.00</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-gradient-to-br from-green-500 to-green-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Total Trips</h3>
+                            <p class="text-2xl font-bold" id="totalTrips">0</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-route text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm opacity-90">Average Per Hour</h3>
+                            <p class="text-2xl font-bold" id="avgPerHour">$0.00</p>
+                        </div>
+                        <div class="p-3 bg-white/20 rounded-full">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Timer -->
+            <div class="card mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold">Work Timer</h3>
+                        <p class="text-sm text-gray-500">Track your working hours</p>
+                    </div>
+                    <div id="currentWorkTime" class="text-3xl font-mono">00:00:00</div>
+                </div>
+                <div class="flex gap-4">
+                    <button id="startWorkBtn" onclick="startWork()" 
+                            class="btn bg-green-500 hover:bg-green-600 text-white flex-1">
+                        <i class="fas fa-play"></i>
+                        <span>Start Work</span>
+                    </button>
+                    <button id="endWorkBtn" onclick="endWork()" 
+                            class="btn bg-red-500 hover:bg-red-600 text-white flex-1" disabled>
+                        <i class="fas fa-stop"></i>
+                        <span>End Work</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Earnings Trend</h3>
+                    <canvas id="earningsChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Trip Statistics</h3>
+                    <canvas id="tripsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold">Recent Activity</h3>
+                        <p class="text-sm text-gray-500">Your latest trips and earnings</p>
+                    </div>
+                </div>
+                <div id="activityFeed" class="space-y-4">
+                    <!-- Activity items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await utils.loadNavigation();
+            utils.initializeTheme();
+        });
+    </script>
+</body>
+</html>

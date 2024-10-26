@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MileWise - Smart Ride-Sharing Calculator</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Include Navigation -->
+    <div id="nav-placeholder"></div>
+
+    <main class="app-container">
+        <div class="main-content">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">Route Calculator</h1>
+                        <p class="text-sm opacity-80">Calculate optimal routes and fares for your passengers</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="optimizeRoute()" class="btn bg-white/20 hover:bg-white/30 text-white">
+                            <i class="fas fa-magic"></i>
+                            <span>Optimize Route</span>
+                        </button>
+                        <button onclick="saveTrip()" class="btn bg-white/20 hover:bg-white/30 text-white">
+                            <i class="fas fa-save"></i>
+                            <span>Save Trip</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map and Route Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Map Container -->
+                <div class="lg:col-span-2">
+                    <div class="card h-[500px] p-0 overflow-hidden">
+                        <div id="map" class="w-full h-full"></div>
+                    </div>
+                </div>
+
+                <!-- Route Summary -->
+                <div class="space-y-6">
+                    <div class="card">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-route mr-2 text-blue-500"></i>
+                            Route Summary
+                        </h3>
+                        <div id="routeSummaryPanel" class="space-y-4">
+                            <!-- Route summary will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="card bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-3 bg-white/20 rounded-full">
+                                    <i class="fas fa-route text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Total Distance</p>
+                                    <p class="text-xl font-bold"><span id="totalDistance">0</span> miles</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-gradient-to-br from-green-500 to-green-600 text-white p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-3 bg-white/20 rounded-full">
+                                    <i class="fas fa-dollar-sign text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Total Revenue</p>
+                                    <p class="text-xl font-bold">$<span id="totalRevenue">0.00</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passenger Management -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-users mr-2 text-purple-500"></i>
+                        Passenger Management
+                    </h2>
+                    <button onclick="addPassenger()" class="btn bg-purple-500 hover:bg-purple-600 text-white">
+                        <i class="fas fa-user-plus"></i>
+                        Add Passenger
+                    </button>
+                </div>
+                
+                <div id="passengerList" class="space-y-6">
+                    <!-- Passengers will be added here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await utils.loadNavigation();
+            utils.initializeTheme();
+        });
+    </script>
+</body>
+</html>

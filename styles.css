@@ -1,0 +1,196 @@
+/* Custom styles for specific components */
+
+/* Passenger Management Section */
+.passenger-management {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Passenger Entry */
+.passenger-entry {
+    background: var(--card-light);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-light);
+    height: fit-content;
+}
+
+.passenger-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Passenger Info */
+.passenger-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.passenger-input-group {
+    flex: 1;
+}
+
+.passenger-input-group label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.25rem;
+}
+
+.passenger-name {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+/* Location Inputs */
+.passenger-locations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.location-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.location-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+.location-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+/* Stats and Actions */
+.passenger-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.passenger-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.passenger-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.btn-calculate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    flex: 1;
+}
+
+.btn-calculate:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-remove {
+    padding: 0.5rem;
+    background: var(--danger-color);
+    color: white;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+    background: var(--danger-dark);
+    transform: translateY(-1px);
+}
+
+/* Dark Mode Adjustments */
+.dark-mode .passenger-entry {
+    background: var(--card-dark);
+}
+
+.dark-mode .passenger-name,
+.dark-mode .location-input {
+    background: var(--background-dark);
+    border-color: var(--border-medium);
+    color: var(--text-dark);
+}
+
+.dark-mode .passenger-footer {
+    border-color: var(--border-medium);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .passenger-footer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .passenger-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .passenger-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide {
+    animation: slideIn 0.3s ease-out;
+}
