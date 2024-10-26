@@ -1,4 +1,4 @@
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGlsYXNoMTAiLCJhIjoiY20ycTRsdWh4MTAwczJ2cHV1NDg5eXUzYyJ9.E56IB2Lol75G1lF7YpijdQ';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGlsYXNoMTAiLCJhIjoiY2x0MnBrNjNkMHMyZTJrcTNheGhpbDdycSJ9.pkMd94j1RxNhXOjhp9lD2A';
 let map;
 let passengerCount = 0;
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -1035,3 +1035,4 @@ function updateWorkTimer() {
     document.getElementById('currentWorkTime').textContent = 
         `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+

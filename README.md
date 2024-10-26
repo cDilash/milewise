@@ -1,5 +1,7 @@
 # MileWise - Smart Ride-Sharing Calculator
 
+Live Demo: [https://cdilash.github.io/milewise/](https://cdilash.github.io/milewise/)
+
 MileWise is a modern web application designed to help ride-sharing drivers manage their trips, track expenses, and analyze their earnings efficiently.
 
 ## Features
@@ -37,6 +39,6 @@ MileWise is a modern web application designed to help ride-sharing drivers manag
 - Modern CSS with responsive design
 - Dark mode support
 
-## Getting Started
+## Local Development
 
 1. Clone the repository:
