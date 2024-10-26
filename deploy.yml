@@ -3,35 +3,37 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # or master, depending on your default branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
-          npm install -g clean-css-cli
-          npm install -g uglify-js
+          if [ -f package.json ]; then
+            npm install
+          fi
 
       - name: Build
         run: |
-          mkdir -p dist
-          cp -r *.html dist/
-          cp -r css dist/
-          cp -r js dist/
-          cp -r components dist/
-          cp -r images dist/ 2>/dev/null || :
+          if [ -f package.json ]; then
+            npm run build
+          fi
+        env:
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          branch: gh-pages
+          folder: .  # or your build folder if you have one
+          clean: true

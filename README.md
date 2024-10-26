@@ -2,9 +2,6 @@
 
 MileWise is a modern web application designed to help ride-sharing drivers manage their trips, track expenses, and analyze their earnings efficiently.
 
-## Live Demo
-Visit the live application: [MileWise App](https://yourusername.github.io/milewise/)
-
 ## Features
 
 - **Interactive Map Integration**
