@@ -115,7 +115,7 @@
                     <!-- Expense Form -->
                     <div class="card">
                         <h3 class="text-lg font-semibold mb-4">Add New Expense</h3>
-                        <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
                             <div class="input-group">
                                 <label class="text-sm text-gray-500 mb-1 block">Electricity Used</label>
                                 <div class="relative">
@@ -134,19 +134,10 @@
                                            placeholder="Amount in $">
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <label class="text-sm text-gray-500 mb-1 block">Other Expenses</label>
-                                <div class="relative">
-                                    <i class="fas fa-receipt absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                    <input type="number" id="otherCost" 
-                                           class="w-full pl-10" 
-                                           placeholder="Amount in $">
-                                </div>
-                            </div>
                         </div>
 
                         <button onclick="calculateAndSaveExpense()" 
-                                class="btn bg-purple-500 hover:bg-purple-600 text-white w-full mt-6">
+                                class="btn bg-purple-500 hover:bg-purple-600 text-white w-full mt-4">
                             <i class="fas fa-plus-circle"></i>
                             <span>Add Expense</span>
                         </button>

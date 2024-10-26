@@ -60,15 +60,14 @@ function calculateExpenses() {
     const kwhRate = parseFloat(document.getElementById('kwhRate').value);
     const kwhUsed = parseFloat(document.getElementById('kwhUsed').value) || 0;
     const maintenanceCost = parseFloat(document.getElementById('maintenanceCost').value) || 0;
-    const otherCost = parseFloat(document.getElementById('otherCost').value) || 0;
     
-    if (kwhUsed === 0 && maintenanceCost === 0 && otherCost === 0) {
+    if (kwhUsed === 0 && maintenanceCost === 0) {
         utils.showNotification('Please enter at least one expense', 'error');
         return null;
     }
     
     const chargingCost = kwhUsed * kwhRate;
-    const totalExpenses = chargingCost + maintenanceCost + otherCost;
+    const totalExpenses = chargingCost + maintenanceCost;
     
     // Update quick stats display
     document.getElementById('chargingCost').textContent = utils.formatCurrency(chargingCost);
@@ -81,7 +80,6 @@ function calculateExpenses() {
         kwhUsed,
         chargingCost,
         maintenanceCost,
-        otherCost,
         totalExpenses
     };
 }
@@ -110,7 +108,6 @@ function calculateNetProfit() {
 function clearExpenseForm() {
     document.getElementById('kwhUsed').value = '';
     document.getElementById('maintenanceCost').value = '';
-    document.getElementById('otherCost').value = '';
 }
 
 function setupExpenseCharts() {
@@ -217,26 +214,35 @@ function calculateExpenseTotals(expenses) {
 
 function processExpenseTrendData(expenses) {
     const dailyExpenses = {};
-    const last7Days = [];
     
-    // Get last 7 days
-    for (let i = 6; i >= 0; i--) {
+    // Create array of last 7 days in reverse order
+    const last7Days = Array.from({length: 7}, (_, i) => {
         const date = new Date();
-        date.setDate(date.getDate() - i);
-        last7Days.push(date.toLocaleDateString());
+        date.setHours(0, 0, 0, 0);
+        date.setDate(date.getDate() - (6 - i));
+        return date;
+    });
+
+    // Initialize expenses for each day
+    last7Days.forEach(date => {
         dailyExpenses[date.toLocaleDateString()] = 0;
-    }
+    });
     
     // Group expenses by date
     expenses.forEach(expense => {
-        const date = new Date(expense.date).toLocaleDateString();
-        if (dailyExpenses.hasOwnProperty(date)) {
-            dailyExpenses[date] += expense.totalExpenses;
+        const expenseDate = new Date(expense.date);
+        expenseDate.setHours(0, 0, 0, 0);
+        
+        if (expenseDate >= last7Days[0] && expenseDate <= last7Days[6]) {
+            const dateStr = expenseDate.toLocaleDateString();
+            if (dailyExpenses.hasOwnProperty(dateStr)) {
+                dailyExpenses[dateStr] += expense.totalExpenses;
+            }
         }
     });
 
     return {
-        labels: Object.keys(dailyExpenses),
+        labels: Object.keys(dailyExpenses).map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })),
         data: Object.values(dailyExpenses)
     };
 }

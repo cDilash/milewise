@@ -9,9 +9,7 @@ let tripsChart;
 document.addEventListener('DOMContentLoaded', async function() {
     try {
         await initializeDashboard();
-        setupCharts();
         updateRealtimeStats();
-        initializeWorkTimer();
         // Update stats every minute
         setInterval(updateRealtimeStats, 60000);
     } catch (error) {
@@ -64,154 +62,6 @@ function updateQuickStats(stats) {
     document.getElementById('avgPerHour').textContent = utils.formatCurrency(stats.avgPerHour);
 }
 
-function setupCharts() {
-    const earnings = utils.getFromLocalStorage('trips', []);
-    
-    // Setup earnings trend chart
-    setupEarningsTrendChart(earnings);
-    
-    // Setup trips distribution chart
-    setupTripsChart(earnings);
-}
-
-function setupEarningsTrendChart(earnings) {
-    const ctx = document.getElementById('earningsChart').getContext('2d');
-    const { labels, data } = processEarningsData(earnings);
-    
-    if (earningsChart) {
-        earningsChart.destroy();
-    }
-
-    earningsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Daily Earnings',
-                data,
-                borderColor: '#4F46E5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return utils.formatCurrency(context.raw);
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: value => utils.formatCurrency(value)
-                    }
-                }
-            }
-        }
-    });
-}
-
-function setupTripsChart(earnings) {
-    const ctx = document.getElementById('tripsChart').getContext('2d');
-    const { labels, data } = processTripsData(earnings);
-    
-    if (tripsChart) {
-        tripsChart.destroy();
-    }
-
-    tripsChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Number of Trips',
-                data,
-                backgroundColor: '#8B5CF6'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            }
-        }
-    });
-}
-
-function processEarningsData(earnings) {
-    const dailyEarnings = {};
-    const last7Days = [];
-    
-    // Get last 7 days
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        last7Days.push(date.toLocaleDateString());
-        dailyEarnings[date.toLocaleDateString()] = 0;
-    }
-    
-    // Group earnings by date
-    earnings.forEach(trip => {
-        const date = new Date(trip.date).toLocaleDateString();
-        if (dailyEarnings.hasOwnProperty(date)) {
-            dailyEarnings[date] += parseFloat(trip.totalRevenue);
-        }
-    });
-
-    return {
-        labels: Object.keys(dailyEarnings),
-        data: Object.values(dailyEarnings)
-    };
-}
-
-function processTripsData(earnings) {
-    const dailyTrips = {};
-    const last7Days = [];
-    
-    // Get last 7 days
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        last7Days.push(date.toLocaleDateString());
-        dailyTrips[date.toLocaleDateString()] = 0;
-    }
-    
-    // Count trips by date
-    earnings.forEach(trip => {
-        const date = new Date(trip.date).toLocaleDateString();
-        if (dailyTrips.hasOwnProperty(date)) {
-            dailyTrips[date]++;
-        }
-    });
-
-    return {
-        labels: Object.keys(dailyTrips),
-        data: Object.values(dailyTrips)
-    };
-}
-
 function updateActivityFeed(earnings) {
     const activityFeed = document.getElementById('activityFeed');
     const recentTrips = earnings.slice(-5).reverse();
@@ -242,6 +92,14 @@ function updateActivityFeed(earnings) {
             </div>
         </div>
     `).join('');
+}
+
+function updateRealtimeStats() {
+    const earnings = utils.getFromLocalStorage('trips', []);
+    const workHours = utils.getFromLocalStorage('workHours', []);
+    const stats = calculateDashboardStats(earnings, workHours);
+    updateQuickStats(stats);
+    updateActivityFeed(earnings);
 }
 
 // Work Timer Functions
@@ -308,15 +166,6 @@ function updateWorkTimer() {
     
     document.getElementById('currentWorkTime').textContent = 
         `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-function updateRealtimeStats() {
-    const earnings = utils.getFromLocalStorage('trips', []);
-    const workHours = utils.getFromLocalStorage('workHours', []);
-    const stats = calculateDashboardStats(earnings, workHours);
-    updateQuickStats(stats);
-    setupCharts();
-    updateActivityFeed(earnings);
 }
 
 // Window resize handler

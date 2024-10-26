@@ -132,52 +132,71 @@ function setupTripsChart(trips) {
 
 function processEarningsData(trips) {
     const dailyEarnings = {};
-    const last7Days = [];
     
-    // Get last 7 days
-    for (let i = 6; i >= 0; i--) {
+    // Create array of last 7 days in reverse order (most recent first)
+    const last7Days = Array.from({length: 7}, (_, i) => {
         const date = new Date();
-        date.setDate(date.getDate() - i);
-        last7Days.push(date.toLocaleDateString());
+        date.setHours(0, 0, 0, 0); // Set to start of day
+        date.setDate(date.getDate() - (6 - i)); // 6 days ago to today
+        return date;
+    });
+
+    // Initialize earnings for each day
+    last7Days.forEach(date => {
         dailyEarnings[date.toLocaleDateString()] = 0;
-    }
+    });
     
-    // Group earnings by date
+    // Only process trips from the last 7 days
     trips.forEach(trip => {
-        const date = new Date(trip.date).toLocaleDateString();
-        if (dailyEarnings.hasOwnProperty(date)) {
-            dailyEarnings[date] += parseFloat(trip.totalRevenue);
+        const tripDate = new Date(trip.date);
+        tripDate.setHours(0, 0, 0, 0); // Set to start of day
+        
+        // Check if trip is within last 7 days
+        if (tripDate >= last7Days[0] && tripDate <= last7Days[6]) {
+            const dateStr = tripDate.toLocaleDateString();
+            if (dailyEarnings.hasOwnProperty(dateStr)) {
+                dailyEarnings[dateStr] += parseFloat(trip.totalRevenue);
+            }
         }
     });
 
     return {
-        labels: Object.keys(dailyEarnings),
+        labels: Object.keys(dailyEarnings).map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })),
         data: Object.values(dailyEarnings)
     };
 }
 
 function processTripsData(trips) {
     const dailyTrips = {};
-    const last7Days = [];
     
-    // Get last 7 days
-    for (let i = 6; i >= 0; i--) {
+    // Create array of last 7 days in reverse order
+    const last7Days = Array.from({length: 7}, (_, i) => {
         const date = new Date();
-        date.setDate(date.getDate() - i);
-        last7Days.push(date.toLocaleDateString());
+        date.setHours(0, 0, 0, 0);
+        date.setDate(date.getDate() - (6 - i));
+        return date;
+    });
+
+    // Initialize trips count for each day
+    last7Days.forEach(date => {
         dailyTrips[date.toLocaleDateString()] = 0;
-    }
+    });
     
-    // Count trips by date
+    // Count trips for each day
     trips.forEach(trip => {
-        const date = new Date(trip.date).toLocaleDateString();
-        if (dailyTrips.hasOwnProperty(date)) {
-            dailyTrips[date]++;
+        const tripDate = new Date(trip.date);
+        tripDate.setHours(0, 0, 0, 0);
+        
+        if (tripDate >= last7Days[0] && tripDate <= last7Days[6]) {
+            const dateStr = tripDate.toLocaleDateString();
+            if (dailyTrips.hasOwnProperty(dateStr)) {
+                dailyTrips[dateStr]++;
+            }
         }
     });
 
     return {
-        labels: Object.keys(dailyTrips),
+        labels: Object.keys(dailyTrips).map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })),
         data: Object.values(dailyTrips)
     };
 }

@@ -4,6 +4,8 @@ let passengerCount = 0;
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
 let currentMarkers = [];
 let currentRoute = null;
+let workTimer;
+let workStartTime;
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', async function() {
@@ -11,7 +13,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         await utils.loadNavigation();
         await initializeMapWithRetry();
         utils.initializeTheme();
-        addPassenger(); // Add first passenger
+        initializeWorkTimer(); // Add this line
+        addPassenger();
         makePassengersDraggable();
     } catch (error) {
         console.error('Initialization error:', error);
@@ -315,7 +318,7 @@ async function calculateRouteForPassenger(id) {
         const costSpan = document.getElementById(`cost-${id}`);
         
         const distance = (routeData.distance / 1609.34).toFixed(1); // Convert meters to miles
-        const cost = (distance * 2.50 / 4).toFixed(2); // $2.50 per mile divided by 4 passengers
+        const cost = (distance * 1.00 / 4).toFixed(2); // $1.00 per mile divided by 4 passengers
         
         distanceSpan.textContent = distance;
         costSpan.textContent = cost;
@@ -324,8 +327,9 @@ async function calculateRouteForPassenger(id) {
         drawRoute(routeData.geometry);
         await showAllPassengerMarkers();
         
-        // Update total
+        // Update total and route summary
         calculateTotalCost();
+        updateRouteSummary();
         
         utils.showNotification('Route calculated successfully', 'success');
 
@@ -602,7 +606,7 @@ function removePassenger(id) {
     }
 }
 
-// Add this function to update route summary
+// Update the route summary function
 function updateRouteSummary() {
     const summaryPanel = document.getElementById('routeSummaryPanel');
     const passengers = document.querySelectorAll('.passenger-entry');
@@ -618,24 +622,39 @@ function updateRouteSummary() {
 
         if (pickup && dropoff) {
             summaryHTML += `
-                <div class="route-item">
-                    <div class="route-number">${id}</div>
-                    <div class="route-details">
-                        <div class="font-semibold">${name}</div>
-                        <div class="text-sm text-gray-500">
-                            <div><i class="fas fa-map-marker-alt text-green-500"></i> ${pickup}</div>
-                            <div><i class="fas fa-map-pin text-red-500"></i> ${dropoff}</div>
+                <div class="route-item bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="route-number bg-blue-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold">
+                                ${id}
+                            </div>
+                            <div class="font-semibold text-sm truncate max-w-[100px]">${name}</div>
                         </div>
-                        <div class="text-sm mt-2">
-                            <span>${distance} miles</span>
-                            <span class="mx-2">|</span>
-                            <span class="text-green-500">$${cost}</span>
+                        <div class="text-xs font-semibold text-green-500">$${cost}</div>
+                    </div>
+                    <div class="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-map-marker-alt text-green-500 text-xs"></i>
+                            <span class="truncate">${pickup}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-map-pin text-red-500 text-xs"></i>
+                            <span class="truncate">${dropoff}</span>
                         </div>
                     </div>
                 </div>
             `;
         }
     });
+
+    if (!summaryHTML) {
+        summaryHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 py-2">
+                <i class="fas fa-route text-2xl mb-1"></i>
+                <p class="text-sm">No routes calculated yet</p>
+            </div>
+        `;
+    }
 
     summaryPanel.innerHTML = summaryHTML;
 }
@@ -951,4 +970,68 @@ function generatePrintContent() {
         </body>
         </html>
     `;
+}
+
+function initializeWorkTimer() {
+    const workSession = utils.getFromLocalStorage('currentWorkSession', null);
+    if (workSession && workSession.startTime) {
+        workStartTime = new Date(workSession.startTime);
+        startWorkTimer();
+        document.getElementById('startWorkBtn').disabled = true;
+        document.getElementById('endWorkBtn').disabled = false;
+    }
+}
+
+function startWork() {
+    workStartTime = new Date();
+    utils.saveToLocalStorage('currentWorkSession', { startTime: workStartTime });
+    startWorkTimer();
+    document.getElementById('startWorkBtn').disabled = true;
+    document.getElementById('endWorkBtn').disabled = false;
+    utils.showNotification('Work session started', 'success');
+}
+
+function endWork() {
+    if (!workStartTime) return;
+    
+    const endTime = new Date();
+    const duration = endTime - workStartTime;
+    
+    // Save work session
+    const workHours = utils.getFromLocalStorage('workHours', []);
+    workHours.push({
+        startTime: workStartTime,
+        endTime: endTime,
+        duration: duration
+    });
+    utils.saveToLocalStorage('workHours', workHours);
+    
+    // Clear current session
+    localStorage.removeItem('currentWorkSession');
+    clearInterval(workTimer);
+    workStartTime = null;
+    
+    // Reset UI
+    document.getElementById('currentWorkTime').textContent = '00:00:00';
+    document.getElementById('startWorkBtn').disabled = false;
+    document.getElementById('endWorkBtn').disabled = true;
+    
+    utils.showNotification('Work session saved successfully!', 'success');
+}
+
+function startWorkTimer() {
+    workTimer = setInterval(updateWorkTimer, 1000);
+}
+
+function updateWorkTimer() {
+    if (!workStartTime) return;
+    
+    const now = new Date();
+    const diff = now - workStartTime;
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    
+    document.getElementById('currentWorkTime').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
