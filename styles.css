@@ -226,3 +226,22 @@
 .dark-mode #routeSummaryPanel::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* Draggable passenger styles */
+.passenger-ghost {
+    opacity: 0.5;
+    background: var(--background-light);
+}
+
+.passenger-chosen {
+    background: var(--card-light);
+    box-shadow: var(--shadow-lg);
+}
+
+.passenger-drag {
+    opacity: 0.8;
+}
+
+.passenger-info {
+    cursor: move; /* Show move cursor on drag handle */
+}

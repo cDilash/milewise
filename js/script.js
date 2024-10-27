@@ -1,4 +1,4 @@
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGlsYXNoMTAiLCJhIjoiY2x0MnBrNjNkMHMyZTJrcTNheGhpbDdycSJ9.pkMd94j1RxNhXOjhp9lD2A';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGlsYXNoMTAiLCJhIjoiY20ycXVjZGdiMTVkMDJpcHRyaDM5MmNyeiJ9.n7I7Lrh9mDMypyScGqArhg';
 let map;
 let passengerCount = 0;
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -10,75 +10,68 @@ let workStartTime;
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        await utils.loadNavigation();
-        await initializeMapWithRetry();
+        // Set access token first
+        mapboxgl.accessToken = MAPBOX_TOKEN;
+
+        // Check if mapboxgl is available
+        if (!mapboxgl) {
+            throw new Error('Mapbox GL JS is not loaded');
+        }
+
+        // Check if token is valid
+        if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('your-token-here')) {
+            throw new Error('Invalid Mapbox access token');
+        }
+
+        // Initialize map with basic configuration
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [-74.5, 40], // New York area
+            zoom: 9,
+            failIfMajorPerformanceCaveat: true // This will fail if the map can't be rendered properly
+        });
+
+        // Add load event handler
+        map.on('load', () => {
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+            
+            // Add click handler
+            map.on('click', handleMapClick);
+            console.log('Map loaded successfully');
+        });
+
+        // Add error event handler
+        map.on('error', (e) => {
+            console.error('Map error:', e);
+            handleMapError(e);
+        });
+
+        // Initialize other components
         utils.initializeTheme();
-        initializeWorkTimer(); // Add this line
+        initializeWorkTimer();
         addPassenger();
         makePassengersDraggable();
+
     } catch (error) {
         console.error('Initialization error:', error);
         utils.showNotification('Error initializing application', 'error');
+        handleMapError(error);
     }
 });
 
-// Map initialization with retry mechanism
-async function initializeMapWithRetry(retryCount = 3) {
-    for (let i = 0; i < retryCount; i++) {
-        try {
-            await new Promise((resolve, reject) => {
-                mapboxgl.accessToken = MAPBOX_TOKEN;
-                map = new mapboxgl.Map({
-                    container: 'map',
-                    style: isDarkMode ? 
-                        'mapbox://styles/mapbox/dark-v11' : 
-                        'mapbox://styles/mapbox/streets-v12',
-                    center: [-95.7129, 37.0902],
-                    zoom: 3,
-                    preserveDrawingBuffer: true
-                });
-
-                map.on('load', () => {
-                    console.log('Map loaded successfully');
-                    addMapControls();
-                    map.on('click', handleMapClick);
-                    resolve();
-                });
-
-                map.on('error', (error) => {
-                    console.error('Map error:', error);
-                    reject(error);
-                });
-            });
-            return; // Success, exit retry loop
-        } catch (error) {
-            console.error(`Map initialization attempt ${i + 1} failed:`, error);
-            if (i === retryCount - 1) {
-                handleMapError(error);
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before retry
-        }
-    }
-}
-
+// Simplify map controls
 function addMapControls() {
-    // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    
-    // Add fullscreen control
+    map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new mapboxgl.FullscreenControl());
-    
-    // Add geolocate control
-    map.addControl(
-        new mapboxgl.GeolocateControl({
-            positionOptions: { enableHighAccuracy: true },
-            trackUserLocation: true,
-            showUserHeading: true
-        })
-    );
+    map.addControl(new mapboxgl.GeolocateControl({
+        positionOptions: { enableHighAccuracy: true },
+        trackUserLocation: true
+    }));
 }
 
+// Improve error handling function
 function handleMapError(error) {
     console.error('Map error:', error);
     const mapContainer = document.getElementById('map');
@@ -86,25 +79,47 @@ function handleMapError(error) {
         mapContainer.innerHTML = `
             <div class="flex flex-col items-center justify-center h-full bg-gray-100 dark:bg-gray-800 rounded-lg p-6 text-center">
                 <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">Unable to load map. Please check your internet connection.</p>
-                <button onclick="retryMapLoad()" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-redo mr-2"></i>Retry
-                </button>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    ${error.message || 'Unable to load map. Please check your internet connection and ensure WebGL is enabled.'}
+                </p>
+                <div class="space-y-2">
+                    <button onclick="retryMapLoad()" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center mx-auto">
+                        <i class="fas fa-redo mr-2"></i>Retry Loading Map
+                    </button>
+                    <a href="https://get.webgl.org" 
+                       target="_blank"
+                       class="text-blue-500 hover:text-blue-600 text-sm block">
+                        Check WebGL Support
+                    </a>
+                </div>
             </div>
         `;
     }
 }
 
+// Add retry function
 async function retryMapLoad() {
     const mapContainer = document.getElementById('map');
     if (mapContainer) {
         mapContainer.innerHTML = '';
         try {
-            await initializeMapWithRetry();
-            utils.showNotification('Map loaded successfully', 'success');
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: [-74.5, 40],
+                zoom: 9
+            });
+            
+            map.on('load', () => {
+                map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+                map.on('click', handleMapClick);
+                utils.showNotification('Map loaded successfully', 'success');
+            });
         } catch (error) {
+            console.error('Retry failed:', error);
             utils.showNotification('Failed to load map', 'error');
+            handleMapError(error);
         }
     }
 }
@@ -1036,3 +1051,23 @@ function updateWorkTimer() {
         `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+// Add this function to make passengers draggable
+function makePassengersDraggable() {
+    const passengerList = document.getElementById('passengerList');
+    if (!passengerList) return;
+
+    new Sortable(passengerList, {
+        animation: 150,
+        handle: '.passenger-info', // Use passenger info section as drag handle
+        ghostClass: 'passenger-ghost', // Class for the drop placeholder
+        chosenClass: 'passenger-chosen', // Class for the dragging item
+        dragClass: 'passenger-drag', // Class for the dragging item
+        onEnd: function() {
+            // Recalculate routes after drag
+            recalculateAllRoutes();
+            updateRouteSummary();
+        }
+    });
+}
+
+// Add these CSS classes to styles.css
